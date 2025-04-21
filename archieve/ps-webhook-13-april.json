@@ -1,0 +1,111 @@
+{
+  "name": "ps-webhook copy",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5ac60e76-e17e-4724-86d0-24c39a1de81d",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c8d2fa2c-7f95-40c4-b859-35c64efa0adf",
+      "name": "Webhook",
+      "webhookId": "5ac60e76-e17e-4724-86d0-24c39a1de81d"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai-dashboard-api.primeskills.space/gateway/ai/conversational/chat-agent-stream-v2?model=GPT-4o-Mini",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-AI_TOKEN",
+              "value": "AI-cce55c12ff8f5ef0c92c2910"
+            },
+            {
+              "name": "X-REQUEST_FROM",
+              "value": "AI_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\"conversation_id\": \"5f48bbba-94eb-4741-aaba-acd6bb35fe8c\", \"message\": \"{{ $json.body.message }}\"} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        220,
+        0
+      ],
+      "id": "09f0cbcc-fe2d-4bee-9ea5-2a0a7419d1c2",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n JavaScript Code Node\nconst transformData = (items) => {\n  try {\n    // Validate input\n    if (!Array.isArray(items) || items.length === 0) {\n      throw new Error('Invalid or empty input items array');\n    }\n\n    if (!items[0].json || !items[0].json.data) {\n      throw new Error('Invalid input structure: missing json.data property');\n    }\n\n    // Transform data and return direct object without array wrapper\n    return {\n      json: {\n        reply: items[0].json.data\n      }\n    };\n\n  } catch (error) {\n    console.log('Error in transformation:', error.message);\n    throw error;\n  }\n};\n\n// Execute transformation and get direct object output\nconst result = transformData($input.all());\nreturn result.json;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "id": "781d268c-de65-4faf-a8f9-d3ccb9644d39",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f6a6d07e-c734-4c9b-98aa-b2f848c32464",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1cd0dc38094b18d160b4bbb031e1b224851b245aa3b9f68cb92ec8eb8c2ae97a"
+  },
+  "id": "0Pvzw8UDkOsW0vlm",
+  "tags": []
+}

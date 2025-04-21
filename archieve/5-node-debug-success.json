@@ -1,0 +1,202 @@
+{
+  "name": "ps-webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ps-webhook",
+        "responseMode": "lastNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        -260
+      ],
+      "id": "57889141-ec15-401c-93e2-32dd8d3f94af",
+      "name": "Webhook1",
+      "webhookId": "805e0874-db90-47b7-9de9-e0fcdc97570b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawPhone = $input.first().json.body.phone;\nconst message = $input.first().json.body.message;\n\n// Normalisasi nomor telepon: hapus +, -, spasi, dan karakter non-digit lainnya\nconst phone = rawPhone.replace(/\\D/g, '');\n\nreturn {\n  phone,\n  message,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        -260
+      ],
+      "id": "638572dd-9f52-4012-87bf-9f43df1d8d2a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Instead of returning an array with an object\nreturn {\n  reply: \"Apakah ada yang bisa kami bantu?\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        -460
+      ],
+      "id": "97cdd8af-0eca-46e1-9d68-77264449e0e7",
+      "name": "Code4",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $json.phone }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        60,
+        -260
+      ],
+      "id": "3014c3b5-4b29-4330-9ab8-09ea914ea85b",
+      "name": "HTTP Request",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ca34c2be-8776-40cb-b747-8d82d0a72768",
+              "leftValue": "={{ Number(Object.keys($node[\"HTTP Request\"].json).length) }}",
+              "rightValue": "={{ 0 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        -460
+      ],
+      "id": "44bf06e9-fbbc-42db-94b0-478061bc51b2",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "355c497c-6722-4623-93b0-7280551243a2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1cd0dc38094b18d160b4bbb031e1b224851b245aa3b9f68cb92ec8eb8c2ae97a"
+  },
+  "id": "Pq6qZsThQ42Emsqb",
+  "tags": []
+}

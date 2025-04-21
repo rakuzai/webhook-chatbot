@@ -1,0 +1,86 @@
+{
+  "name": "ps-webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ps-webhook",
+        "responseMode": "lastNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        -260
+      ],
+      "id": "57889141-ec15-401c-93e2-32dd8d3f94af",
+      "name": "Webhook1",
+      "webhookId": "805e0874-db90-47b7-9de9-e0fcdc97570b"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawPhone = $input.first().json.body.phone;\nconst message = $input.first().json.body.message;\n\n// Normalisasi nomor telepon: hapus +, -, spasi, dan karakter non-digit lainnya\nconst phone = rawPhone.replace(/\\D/g, '');\n\nreturn {\n  phone,\n  message,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -140,
+        -260
+      ],
+      "id": "638572dd-9f52-4012-87bf-9f43df1d8d2a",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Instead of returning an array with an object\nreturn {\n  reply: \"Apakah ada yang bisa kami bantu?\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -260
+      ],
+      "id": "97cdd8af-0eca-46e1-9d68-77264449e0e7",
+      "name": "Code4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "30b21223-3c8b-4e77-86cc-ac2c4894aad4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1cd0dc38094b18d160b4bbb031e1b224851b245aa3b9f68cb92ec8eb8c2ae97a"
+  },
+  "id": "Pq6qZsThQ42Emsqb",
+  "tags": []
+}

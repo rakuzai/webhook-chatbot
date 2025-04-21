@@ -1,0 +1,1127 @@
+{
+  "name": "ps-webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ps-webhook",
+        "responseMode": "lastNode",
+        "options": {
+          "rawBody": false
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -40,
+        360
+      ],
+      "id": "76e51723-e63c-4dee-85aa-4f0bb8269b23",
+      "name": "Webhook",
+      "webhookId": "805e0874-db90-47b7-9de9-e0fcdc97570b"
+    },
+    {
+      "parameters": {
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $json.phone }}"
+            },
+            {
+              "name": "select",
+              "value": "*"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        400,
+        360
+      ],
+      "id": "bdd11193-59fb-495f-b287-bb752e3df985",
+      "name": "HTTP Request1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ca34c2be-8776-40cb-b747-8d82d0a72768",
+              "leftValue": "={{ Number(Object.keys($node[\"HTTP Request1\"].json).length) }}",
+              "rightValue": "={{ 0 }}",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        620,
+        360
+      ],
+      "id": "21a6c388-a03b-492a-9e7a-d0b366c2643b",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"phone\": \"{{ $('Code').item.json.phone }}\",\n  \"last_message\": \"{{ $('Code').item.json.message }}\",\n  \"state\": \"initial\"\n}",
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        460
+      ],
+      "id": "91df81d4-a37d-4ede-8eba-e84d2c422192",
+      "name": "HTTP Request2",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $('Code').item.json.phone }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "last_message",
+              "value": "={{ $('Code').item.json.message }}"
+            },
+            {
+              "name": "state",
+              "value": "selected"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        840,
+        260
+      ],
+      "id": "6d0ef1b3-688c-4c55-b4a8-def0ee8eefbb",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $('HTTP Request1').item.json.phone }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1060,
+        260
+      ],
+      "id": "f093014e-912d-48c3-ac10-f1f773541b23",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.choice }}",
+                    "rightValue": "INVALID",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7faaefc4-9a54-41bf-acaa-9ced438105b5"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c126c1f0-cf7f-4c17-9a80-521be3b9743d",
+                    "leftValue": "={{ $json.choice }}",
+                    "rightValue": "Customer Service",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5a7d9f58-9c8e-43a1-b8a1-a20ad2c9743f",
+                    "leftValue": "={{ $json.choice }}",
+                    "rightValue": "Sales",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eb3132eb-9e5b-4366-9fa9-2e238c4561c0",
+                    "leftValue": "={{ $json.choice }}",
+                    "rightValue": "DISCONNECT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1500,
+        239
+      ],
+      "id": "e0d9bbba-95ed-4826-ad83-c751807366e0",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $('Code').item.json.phone }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "agent",
+              "value": "Customer Service"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1720,
+        160
+      ],
+      "id": "ab9f7d04-a293-4e7e-af8a-e908942126b1",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $('Code').item.json.phone }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "agent",
+              "value": "Sales Team"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1720,
+        360
+      ],
+      "id": "0fc56fac-e5d8-45b9-9a79-6599a7111346",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Instead of returning an array with an object\nreturn {\n  reply: \"Apakah ada yang bisa kami bantu? Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team.\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        -40
+      ],
+      "id": "33153fa6-e327-4b7f-b9ae-bfce966b4c63",
+      "name": "Code9"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Instead of returning an array with an object\nreturn {\n  reply: \"Anda telah terhubung dengan Customer Service. Ketik 3, untuk memutuskan koneksi.\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        160
+      ],
+      "id": "6f8c8b0a-c332-429e-8eed-a6810cabedaa",
+      "name": "Code10"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Instead of returning an array with an object\nreturn {\n  reply: \"Anda telah terhubung dengan Sales Team. Ketik 3, untuk memutuskan koneksi.\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        360
+      ],
+      "id": "458fd1a3-990c-4b41-b225-0f40599bcd11",
+      "name": "Code11"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawPhone = $input.first().json.body.phone;\nconst message = $input.first().json.body.message;\n\n// Normalisasi nomor telepon: hapus +, -, spasi, dan karakter non-digit lainnya\nconst phone = rawPhone.replace(/\\D/g, '');\n\nreturn {\n  phone,\n  message,\n  timestamp: new Date().toISOString()\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        360
+      ],
+      "id": "f7043096-14c3-42d4-800f-b39afbbd5134",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const currentState = $input.first().json.state\nconst message = $input.first().json.last_message\n\nif (currentState === 'selected') {\n  switch(message) {\n    case '1':\n      return [{\n        json: {\n          choice: 'Customer Service',\n          reply: 'Anda telah terhubung dengan Customer Service'\n        }\n      }];\n    case '2':\n      return [{\n        json: {\n          choice: 'Sales',\n          reply: 'Anda telah terhubung dengan Sales Team'\n        }\n      }];\n    case '3':\n      return [{\n        json: {\n          choice: 'DISCONNECT',\n          reply: 'Koneksi anda telah terputus. Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Marketing Team'\n        }\n      }];\n    default:\n      return [{\n        json: {\n          choice: 'INVALID',\n          reply: 'Apakah ada yang bisa kami bantu? Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Marketing Team'\n        }\n      }];\n  }\n}\n\nreturn [{\n  json: {\n    choice: 'UNKNOWN',\n    reply: 'State tidak dikenali'\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1280,
+        260
+      ],
+      "id": "8cc4d87c-ef79-48c5-8591-56e635af869f",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Instead of returning an array with an object\nreturn {\n  reply: \"Koneksi anda telah terputus. Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team\"\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1940,
+        560
+      ],
+      "id": "537bb876-2910-4ee9-8c81-8c0421fe2bac",
+      "name": "Code12"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "https://yoynqsqesnssyxzykcxv.supabase.co/rest/v1/conversation_states",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "phone",
+              "value": "=eq.{{ $('Code').item.json.phone }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlveW5xc3Flc25zc3l4enlrY3h2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NDYwNjcxNCwiZXhwIjoyMDYwMTgyNzE0fQ.qotWc90Q3Djw1Tiul8VFDVCWeBPWc9YnsyziIhAi7-Q"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "agent"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1720,
+        560
+      ],
+      "id": "0208f94f-efdd-4fcd-afac-7b3c096d8f7b",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('HTTP Request1').item.json.agent }}",
+                    "rightValue": "Customer Service",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "aec39496-bd7b-4dbb-a934-e319c5485b08"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "5fe5992c-a579-4251-8cd3-5aa8ad2250a1",
+                    "leftValue": "={{ $('HTTP Request1').item.json.agent }}",
+                    "rightValue": "Sales Team",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2160,
+        -240
+      ],
+      "id": "a53aba8d-8b4e-4919-b969-b2ea36463750",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai-dashboard-api.primeskills.space/gateway/ai/conversational/chat-agent-stream-v2?model=GPT-4o-Mini",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-AI_TOKEN",
+              "value": "AI-cce55c12ff8f5ef0c92c2910"
+            },
+            {
+              "name": "X-REQUEST_FROM",
+              "value": "AI_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\"conversation_id\": \"2df7e21d-9625-4646-8af3-21b3c582f502\", \"message\": \"{{ $('Code').item.json.message }}\"} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        -340
+      ],
+      "id": "be2abe2d-e520-4a27-9137-052d5026364c",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mengakses data dari node sebelumnya\nconst message = $input.first().json.data;\n\n// Membuat output dalam bentuk array dengan object yang memiliki key \"reply\"\nreturn [\n  {\n    reply: message\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2820,
+        -340
+      ],
+      "id": "81caae99-e0bf-4b42-b9a1-28b038f0ba0d",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ai-dashboard-api.primeskills.space/gateway/ai/conversational/chat-agent-stream-v2?model=GPT-4o-Mini",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "accept",
+              "value": "application/json"
+            },
+            {
+              "name": "X-AI_TOKEN",
+              "value": "AI-cce55c12ff8f5ef0c92c2910"
+            },
+            {
+              "name": "X-REQUEST_FROM",
+              "value": "AI_TOKEN"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\"conversation_id\": \"cdbe0000-ee5c-4a93-a347-63ab4c8eec2d\", \"message\": \"{{ $('Code').item.json.message }}\"} ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2600,
+        -140
+      ],
+      "id": "981d0619-8f77-4ac4-beda-2943721fed63",
+      "name": "HTTP Request8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Mengakses data dari node sebelumnya\nconst message = $input.first().json.data;\n\n// Membuat output dalam bentuk array dengan object yang memiliki key \"reply\"\nreturn [\n  {\n    reply: message\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2820,
+        -140
+      ],
+      "id": "6183ef8e-e232-4db2-94fc-96a59cb5c940",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c28d39da-94a6-4e5f-855c-33845b4d8030",
+              "leftValue": "={{ $('Code').item.json.message }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2380,
+        -340
+      ],
+      "id": "28d60b6e-bea6-40ff-ba04-e31c967a5fa3",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c28d39da-94a6-4e5f-855c-33845b4d8030",
+              "leftValue": "={{ $('Code').item.json.message }}",
+              "rightValue": "3",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2380,
+        -140
+      ],
+      "id": "73123d92-e83c-4747-a0b2-4937ed4d060c",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b4057dfa-9955-4a0a-9111-b1fa1b0452b1",
+              "leftValue": "={{ $('If2').item.json.agent }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1720,
+        -240
+      ],
+      "id": "8bfda639-e269-42b9-a6d1-2086f6eeea77",
+      "name": "If3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.1,
+      "position": [
+        1960,
+        -240
+      ],
+      "id": "6144ff62-49b9-40e3-ae00-f187535e3510",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Code11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Code12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request8": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Code9",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6d597c8a-8fda-4927-8462-d31d43ec9199",
+  "meta": {
+    "instanceId": "1cd0dc38094b18d160b4bbb031e1b224851b245aa3b9f68cb92ec8eb8c2ae97a"
+  },
+  "id": "PtzTtwWHxEatgk6x",
+  "tags": []
+}
