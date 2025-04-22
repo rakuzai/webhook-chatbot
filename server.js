@@ -131,6 +131,35 @@ function handleAgentSelection(currentState, message) {
   }
 }
 
+// Function to update user's selected agent in Supabase
+async function updateUserAgent(phone, agent) {
+  const url = `${process.env.SUPABASE_URL}/rest/v1/conversation_states?phone=eq.${phone}`;
+
+  const payload = {
+    agent: agent,
+  };
+
+  try {
+    const response = await axios.patch(url, payload, {
+      headers: {
+        apikey: process.env.SUPABASE_API_KEY,
+        Authorization: `Bearer ${process.env.SUPABASE_API_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=representation",
+      },
+    });
+
+    console.log("Agent updated:", response.data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error(
+      "Error updating agent:",
+      error.response?.data || error.message
+    );
+    return { success: false, error: true };
+  }
+}
+
 // Webhook endpoint
 app.post("/", async (req, res) => {
   console.log(
@@ -160,6 +189,10 @@ app.post("/", async (req, res) => {
     const result = handleAgentSelection(userData.state, lastMessage);
     replyMessage = result.reply;
     choice = result.choice;
+
+    if (choice !== "INVALID" && choice !== "DISCONNECT") {
+      await updateUserAgent(phone, choice);
+    }
   }
 
   res.json({
