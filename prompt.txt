@@ -1,3 +1,4 @@
+code:
 // server.js
 require("dotenv").config();
 const express = require("express");
@@ -100,121 +101,34 @@ async function updateUserState(phone, last_message) {
   }
 }
 
-// Function to handle agent selection and message routing
-async function handleAgentSelection(
-  phone,
-  currentState,
-  message,
-  currentAgent
-) {
-  // Default reply message
-  let replyMessage = "";
-  let choice = "";
-  let shouldUpdateAgent = false;
-
+function handleAgentSelection(currentState, message) {
   if (currentState === "selecting") {
     switch (message.trim()) {
       case "1":
-        choice = "Customer Service";
-        replyMessage =
-          "Anda telah terhubung dengan Customer Service. Ketik 3, untuk memutuskan koneksi.";
-        shouldUpdateAgent = true;
-        break;
-
+        return {
+          choice: "Customer Service",
+          reply:
+            "Anda telah terhubung dengan Customer Service. Ketik 3, untuk memutuskan koneksi.",
+        };
       case "2":
-        choice = "Sales";
-        replyMessage =
-          "Anda telah terhubung dengan Sales Team. Ketik 3, untuk memutuskan koneksi.";
-        shouldUpdateAgent = true;
-        break;
-
+        return {
+          choice: "Sales",
+          reply:
+            "Anda telah terhubung dengan Sales Team. Ketik 3, untuk memutuskan koneksi.",
+        };
       case "3":
-        choice = ""; // Empty string for disconnection
-        replyMessage =
-          "Koneksi anda telah terputus. Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team";
-        shouldUpdateAgent = true;
-        break;
-
+        return {
+          choice: "DISCONNECT",
+          reply:
+            "Koneksi anda telah terputus. Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team",
+        };
       default:
-        // If user has an active agent, route the message to that agent
-        if (currentAgent) {
-          const chatResponse = await chatWithAgent(currentAgent, message);
-          replyMessage = chatResponse.reply;
-          choice = currentAgent; // Maintain current agent
-        } else {
-          // If no agent is selected, prompt user to select one
-          choice = "INVALID";
-          replyMessage =
-            "Apakah ada yang bisa kami bantu? Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team";
-        }
-        break;
+        return {
+          choice: "INVALID",
+          reply:
+            "Apakah ada yang bisa kami bantu? Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team",
+        };
     }
-
-    // Update agent if needed
-    if (shouldUpdateAgent) {
-      await updateUserAgent(phone, choice);
-    }
-
-    return {
-      choice: choice,
-      reply: replyMessage,
-    };
-  }
-}
-
-// Function to chat with selected agent using external API
-async function chatWithAgent(agent, message) {
-  let conversationId;
-
-  // Determine the conversation ID based on agent type
-  if (agent === "Customer Service") {
-    conversationId = process.env.CUSTOMER_SERVICE_CONVERSATION_ID;
-  } else if (agent === "Sales") {
-    conversationId = process.env.SALES_CONVERSATION_ID;
-  } else {
-    return {
-      reply: "Maaf, terjadi kesalahan. Silahkan coba lagi nanti.",
-    };
-  }
-
-  try {
-    const response = await axios.post(
-      "https://ai-dashboard-api.primeskills.space/gateway/ai/conversational/chat-agent-stream-v2?model=GPT-4o-Mini",
-      {
-        conversation_id: conversationId,
-        message: message,
-      },
-      {
-        headers: {
-          accept: "application/json",
-          "X-AI_TOKEN": process.env.AI_TOKEN,
-          "X-REQUEST_FROM": "AI_TOKEN",
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    // Log the entire response for debugging
-    console.log(
-      "Agent API Raw Response:",
-      JSON.stringify(response.data, null, 2)
-    );
-
-    // Process and return the AI response
-    return {
-      reply:
-        response.data ||
-        "Maaf, kami tidak dapat memproses pesan Anda saat ini.",
-    };
-  } catch (error) {
-    console.error(
-      "Error chatting with agent:",
-      error.response?.data || error.message
-    );
-    return {
-      reply:
-        "Terjadi kesalahan saat berkomunikasi dengan agen. Silahkan coba lagi nanti.",
-    };
   }
 }
 
@@ -268,22 +182,18 @@ app.post("/", async (req, res) => {
   if (!userCheck.exists) {
     await createUser(phone, lastMessage);
   } else {
-    // Update user's last message
     await updateUserState(phone, lastMessage);
 
-    // Get updated user data
     const updatedUser = await checkUserExists(phone);
     const userData = updatedUser.data[0];
 
-    // Handle agent selection and get response
-    const result = await handleAgentSelection(
-      phone,
-      userData.state,
-      lastMessage,
-      userData.agent
-    );
+    const result = handleAgentSelection(userData.state, lastMessage);
     replyMessage = result.reply;
     choice = result.choice;
+
+    if (choice !== "INVALID" && choice !== "DISCONNECT") {
+      await updateUserAgent(phone, choice);
+    }
   }
 
   res.json({
@@ -297,3 +207,49 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+---
+
+based on the code above, modify the handleAgentSelection and updateUserAgent function, with this logic, create one or two function what do you think is good.
+
+---
+LOGIC:
+
+switch case
+case 1 -> if the user selected 1 the agent is customer service, 
+	update the agent column in supabase,
+	reply with this message 'Anda telah terhubung dengan Customer Service. Ketik 3, untuk memutuskan koneksi.',
+case 2 -> if the user selected 2 the agent is sales,
+	update the agent column in supabase,
+	reply this message 'Anda telah terhubung dengan Sales Team. Ketik 3, untuk memutuskan koneksi.'
+case 3 -> if the user selected 3 then disconnect,
+	update the agent column in supabase into empty string,
+	reply with this message 'Koneksi anda telah terputus. Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team'
+default -> if the user is send another message then INVALID,
+	send the data to another function e.g. chat with agent,
+	if the user agent is empty, reply with this message 'Apakah ada yang bisa kami bantu? Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team.'
+	else, do switch case again, 
+	check if the agent is 1 (customer service) or 2 (sales), if one of two condition is true hit this api with sensitive data stored in .env
+	customer service:
+    curl --location 'https://ai-dashboard-api.primeskills.space/gateway/ai/conversational/chat-agent-stream-v2?model=GPT-4o-Mini' \
+    --header 'accept: application/json' \
+    --header 'X-AI_TOKEN: AI-cce55c12ff8f5ef0c92c2910' \
+    --header 'X-REQUEST_FROM: AI_TOKEN' \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "conversation_id": "b7c118fc-571e-4cd4-8a97-50bf39c46036",
+        "message": "selamat siang"
+    }'
+
+    sales:
+    curl --location 'https://ai-dashboard-api.primeskills.space/gateway/ai/conversational/chat-agent-stream-v2?model=GPT-4o-Mini' \
+    --header 'accept: application/json' \
+    --header 'X-AI_TOKEN: AI-cce55c12ff8f5ef0c92c2910' \
+    --header 'X-REQUEST_FROM: AI_TOKEN' \
+    --header 'Content-Type: application/json' \
+    --data '{
+        "conversation_id": "b489377b-68ad-4c19-a5e5-ec7f372c1d13",
+        "message": "selamat siang"
+    }'
+	
+
