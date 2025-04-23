@@ -296,7 +296,7 @@ async function updateUserAgent(phone, agent) {
  * Main webhook endpoint handler for WhatsAuto messages
  * Processes incoming messages, manages user state, and returns appropriate responses
  */
-app.post("/api", async (req, res) => {
+app.post("/", async (req, res) => {
   console.log(
     "Received WhatsAuto Webhook Data:",
     JSON.stringify(req.body, null, 2)
@@ -341,4 +341,7 @@ app.post("/api", async (req, res) => {
   });
 });
 
-module.exports = app;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
