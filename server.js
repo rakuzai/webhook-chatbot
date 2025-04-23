@@ -1,4 +1,12 @@
-// server.js
+/**
+ * WhatsAuto Webhook Server
+ *
+ * This server integrates WhatsAuto messaging with Supabase database and an AI chatbot system.
+ * It handles user creation, agent selection, and conversation management for customer service
+ * and sales support.
+ *
+ */
+
 require("dotenv").config();
 const express = require("express");
 const axios = require("axios");
@@ -9,7 +17,13 @@ app.use(express.urlencoded({ extended: true }));
 
 console.log("Using Supabase URL:", process.env.SUPABASE_URL);
 
-// Function to create a new user in Supabase
+/**
+ * Creates a new user in the Supabase database
+ *
+ * @param {string} phone - The user's phone number (without formatting characters)
+ * @param {string} last_message - The most recent message from the user
+ * @returns {Promise<Object>} Object containing success status and data or error
+ */
 async function createUser(phone, last_message = "") {
   const url = `${process.env.SUPABASE_URL}/rest/v1/conversation_states`;
 
@@ -41,7 +55,12 @@ async function createUser(phone, last_message = "") {
   }
 }
 
-// Function to check if user exists in Supabase
+/**
+ * Checks if a user already exists in the Supabase database
+ *
+ * @param {string} phone - The user's phone number (without formatting characters)
+ * @returns {Promise<Object>} Object containing existence status and user data
+ */
 async function checkUserExists(phone) {
   const url = `${process.env.SUPABASE_URL}/rest/v1/conversation_states?phone=eq.${phone}`;
 
@@ -70,7 +89,13 @@ async function checkUserExists(phone) {
   }
 }
 
-// Function to update user state and last message in Supabase
+/**
+ * Updates a user's state and last message in the Supabase database
+ *
+ * @param {string} phone - The user's phone number (without formatting characters)
+ * @param {string} last_message - The most recent message from the user
+ * @returns {Promise<Object>} Object containing success status and updated data
+ */
 async function updateUserState(phone, last_message) {
   const url = `${process.env.SUPABASE_URL}/rest/v1/conversation_states?phone=eq.${phone}`;
 
@@ -100,7 +125,15 @@ async function updateUserState(phone, last_message) {
   }
 }
 
-// Function to handle agent selection and message routing
+/**
+ * Handles agent selection and message routing logic
+ *
+ * @param {string} phone - The user's phone number
+ * @param {string} currentState - The user's current conversation state
+ * @param {string} message - The message from the user
+ * @param {string|null} currentAgent - The user's currently selected agent, if any
+ * @returns {Promise<Object>} Object containing the selected agent and reply message
+ */
 async function handleAgentSelection(
   phone,
   currentState,
@@ -162,7 +195,13 @@ async function handleAgentSelection(
   }
 }
 
-// Function to chat with selected agent using external API
+/**
+ * Communicates with elwyn API
+ *
+ * @param {string} agent - The selected agent type ("Customer Service" or "Sales")
+ * @param {string} message - The user's message to send to the agent
+ * @returns {Promise<Object>} Object containing the AI agent's reply
+ */
 async function chatWithAgent(agent, message) {
   let conversationId;
 
@@ -218,7 +257,13 @@ async function chatWithAgent(agent, message) {
   }
 }
 
-// Function to update user's selected agent in Supabase
+/**
+ * Updates the user's selected agent in the Supabase database
+ *
+ * @param {string} phone - The user's phone number
+ * @param {string} agent - The selected agent ("Customer Service", "Sales", or empty string)
+ * @returns {Promise<Object>} Object containing success status and updated data
+ */
 async function updateUserAgent(phone, agent) {
   const url = `${process.env.SUPABASE_URL}/rest/v1/conversation_states?phone=eq.${phone}`;
 
@@ -247,7 +292,10 @@ async function updateUserAgent(phone, agent) {
   }
 }
 
-// Webhook endpoint
+/**
+ * Main webhook endpoint handler for WhatsAuto messages
+ * Processes incoming messages, manages user state, and returns appropriate responses
+ */
 app.post("/", async (req, res) => {
   console.log(
     "Received WhatsAuto Webhook Data:",
