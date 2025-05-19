@@ -296,7 +296,7 @@ async function updateUserAgent(phone, agent) {
  * Main webhook endpoint handler for WhatsAuto messages
  * Processes incoming messages, manages user state, and returns appropriate responses
  */
-app.post("/", async (req, res) => {
+app.post("/api", async (req, res) => {
   console.log(
     "Received WhatsAuto Webhook Data:",
     JSON.stringify(req.body, null, 2)
