@@ -541,7 +541,7 @@ app.post("/api", async (req, res) => {
     const createResult = await createUser(phone, lastMessage);
     if (createResult.success) {
       replyMessage =
-        "Selamat datang! Silahkan pilih agent kami untuk keperluan anda. 1) Customer Service 2) Sales Team";
+        "👋 Hai, selamat datang di layanan pelanggan kami! Senang bisa membantu Anda hari ini. Silakan ketik pesan Anda terlebih dahulu, dan kami akan segera menampilkan pilihan agen yang sesuai untuk membantu Anda lebih lanjut. 😊";
     } else {
       replyMessage =
         "Terjadi kesalahan saat memproses permintaan Anda. Silahkan coba lagi nanti.";
